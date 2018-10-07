@@ -21,7 +21,8 @@
 const grid = [];
 const GRID_LENGTH = 3;
 let turn = 'X';
-
+let compMoves = [];
+let myMoves = [];
 function initializeGrid() {
     for (let colIdx = 0;colIdx < GRID_LENGTH; colIdx++) {
         const tempArray = [];
@@ -74,10 +75,18 @@ function renderMainGrid() {
 function onBoxClick() {
     var rowIdx = this.getAttribute("rowIdx");
     var colIdx = this.getAttribute("colIdx");
+    var rowIdx0 = (rowIdx + 1)%3;
+    var colIdx0 = (colIdx + 1)%3;
     let newValue = 1;
+    compMoves.push({'ypos':rowIdx, 'xpos':colIdx});
+    myMoves.push({'ypos':rowIdx0, 'xpos':colIdx0});
+    console.log('compMoves', compMoves,'myMoves', myMoves);
     grid[colIdx][rowIdx] = newValue;
+    grid[colIdx0][rowIdx0] = 2;
+    checkWinner()
     renderMainGrid();
     addClickHandlers();
+    
 }
 
 function addClickHandlers() {
@@ -85,6 +94,75 @@ function addClickHandlers() {
     for (var idx = 0; idx < boxes.length; idx++) {
         boxes[idx].addEventListener('click', onBoxClick, false);
     }
+}
+function rowWiseWin(){
+    let sumY0=0, sumY1=0, sumY2=0;
+    if(myMoves.length>=3){
+        for(var indx = 0; indx<myMoves.length;indx++){
+            if(myMoves[indx].xpos == 0){
+                sumY0+=myMoves[indx].ypos;
+            }else if(myMoves[indx].xpos == 1){
+                sumY1+=myMoves[indx].ypos;
+            }else if(myMoves[indx].xpos == 2){
+                sumY2+=myMoves[indx].ypos;
+            }
+        }
+       
+    }
+    if(sumY0==3 || sumY1==3 ||sumY2==3){
+        return true;
+    }else{
+        return false;
+    }
+}
+function columnWin(){
+    let sumY0=0, sumY1=0, sumY2=0;
+    if(myMoves.length>=3){
+        for(var indx = 0; indx<myMoves.length;indx++){
+            if(myMoves[indx].ypos == 0){
+                sumY0+=myMoves[indx].xpos;
+            }else if(myMoves[indx].ypos == 1){
+                sumY1+=myMoves[indx].xpos;
+            }else if(myMoves[indx].ypos == 2){
+                sumY2+=myMoves[indx].xpos;
+            }
+        }
+       
+    }
+    if(sumY0==3 || sumY1==3 ||sumY2==3){
+        return true;
+    }else{
+        return false;
+    }
+}
+function diagonalWin(){
+    let sumD=0;
+    if(myMoves.length>=3){
+        for(var indx = 0; indx<myMoves.length;indx++){
+            if(myMoves[indx].ypos == 0 && myMoves[indx].xpos == 0){
+                sumD+=1;
+            }else if(myMoves[indx].ypos == 1 && myMoves[indx].xpos == 1){
+                sumD+=1;
+            }else if(myMoves[indx].ypos == 2 && myMoves[indx].xpos == 2){
+                sumD+=1;
+            }
+        }
+    }
+    if(sumD==3){
+        return true;
+    }else{
+        return false;
+    }
+}
+function checkWinner(){
+   if(rowWiseWin()){
+       console.log("win");
+   }else if(columnWin()){
+    console.log("win");
+   }else if(diagonalWin()){
+    console.log("win");
+   }
+   
 }
 
 initializeGrid();
